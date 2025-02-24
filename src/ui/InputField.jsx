@@ -5,7 +5,7 @@ const InputField = ({ type = "text", placeholder, value, onChange }) => {
             placeholder={placeholder}
             value={value}
             onChange={onChange}
-            className="w-full bg-black text-white py-2 px-4 rounded-sm outline-none my-2 shadow-lg shadow-gray-800"
+            className="w-full bg-black text-white py-2 rounded-sm outline-none my-2 shadow-lg shadow-gray-800 px-10"
         />
     );
 };
