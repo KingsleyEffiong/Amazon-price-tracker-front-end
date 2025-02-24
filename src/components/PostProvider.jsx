@@ -13,6 +13,7 @@ const initialState = {
     username: "",
     password: "",
     email: "",
+    errors: null
 }
 const PostContext = createContext();
 function PostProvider({ children }) {
@@ -37,16 +38,23 @@ function PostProvider({ children }) {
                     email: action.userEmail
                 }
                 break;
+            case 'ERRORS':
+                return {
+                    ...state,
+                    errors: action.errors
+                }
+                break;
             default:
                 return state;
         }
     }
-    const [{ username, password, email }, dispatch] = useReducer(reducer, initialState);
+    const [{ username, password, email, errors }, dispatch] = useReducer(reducer, initialState);
     return (
         <PostContext.Provider value={{
             username,
             password,
             email,
+            errors,
             dispatch
         }}>{children}</PostContext.Provider>
     )

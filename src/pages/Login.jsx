@@ -8,36 +8,37 @@ import EnhancedEncryptionIcon from '@mui/icons-material/EnhancedEncryption';
 import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import Loader from "../assets/images/Triple intersection.gif"
+import Swal from 'sweetalert2'
 
 
-const SIGNIN_URL = import.meta.env.SIGNIN_URL;
+const SIGNIN_URL = import.meta.env.VITE_SIGNIN_URL;
 function Login() {
-    const { email, password, dispatch } = useProvider();
+    const { email, password, errors, dispatch } = useProvider();
     const [visible, setVisible] = useState(false)
+    const [loading, setLoading] = useState(false)
     const handleLogin = async () => {
-        if (!email.trim() || !password.trim()) {
-            alert('Please fill all fields');
-            return;
-        }
         try {
-            const response = await fetch(`${SIGNIN_URL}`, {
-                method: 'POST',
+            const response = await fetch(`${SIGNIN_URL}`, { // Change this URL to match your backend
+                method: "POST",
                 headers: {
-                    'Content-Type': 'application/json'
+                    "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ email, password })
-            })
-            if (response.ok) {
-                const data = await response.json();
-                console.log(data)
-                alert('Login successful');
-                dispatch({ type: 'EMAIL', userEmail: '' });
-                dispatch({ type: 'PASSWORD', pass: '' });
+                body: JSON.stringify({ email, password }),
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
             }
+
+            const data = await response.json(); // Ensure response is valid JSON
+            console.log("Login Successful:", data);
+
+            // Handle successful login (e.g., store token)
         } catch (error) {
-            console.log(error.message);
+            console.error("Login Error:", error.message);
         }
-    }
+    };
+
     return (
         <form action='' className='w-[350px] h-auto rounded-lg px-4 py-2.5 flex flex-col justify-center align-items-center text-center shadow-2xl shadow-[#afa1a1]' style={{
             backgroundColor: "var(--background-color)",
@@ -75,7 +76,11 @@ function Login() {
                 </div>
             </div>
             <Button onClick={handleLogin}>
-                <img src={Loader} className='w-10' alt="" />
+                {loading ? (
+                    <img src={Loader} className='w-10' alt="" />
+                ) : (
+                    <p className='text-[var(--background-color)]'>Login</p>
+                )}
             </Button>
         </form>
     )

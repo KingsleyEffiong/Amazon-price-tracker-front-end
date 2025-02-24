@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import InputField from '../ui/InputField'
 import Button from '../ui/Button'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useProvider } from '../components/PostProvider';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import EmailIcon from '@mui/icons-material/Email';
@@ -11,20 +11,23 @@ import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import Swal from 'sweetalert2'
 import Loader from "../assets/images/Triple intersection.gif"
 
+
 const SIGNUP_URL = import.meta.env.VITE_SIGNUP_URL;
 
 function Signup() {
-    const { username, email, password, dispatch } = useProvider();
+    const { username, email, password, errors, dispatch } = useProvider();
     const [visible, setVisible] = useState(false)
     const [loading, setLoading] = useState(false)
 
+    const navigate = useNavigate()
 
 
     const handleSignup = async () => {
         if (!username.trim() || !email.trim() || !password.trim()) {
-            alert('Please fill all fields');
+            dispatch({ type: 'ERRORS', errors: 'Please fill all fields' })
             return;
         }
+        setLoading(true)
         try {
             const response = await fetch(`${SIGNUP_URL}`, {
 
@@ -35,28 +38,25 @@ function Signup() {
                 body: JSON.stringify({ username, email, password })
             })
             const data = await response.json();
-            console.log(data)
             if (response.ok) {
-                alert('Signup successful');
                 dispatch({ type: 'USERNAME', user: '' });
                 dispatch({ type: 'EMAIL', userEmail: '' });
                 dispatch({ type: 'PASSWORD', pass: '' });
                 Swal.fire({
-                    position: "top-end",
+                    title: "Sign up successful",
                     icon: "success",
-                    title: "Your work has been saved",
-                    showConfirmButton: false,
-                    timer: 1500
-                })
+                    draggable: true
+                });
+                dispatch({ type: 'ERRORS', errors: null })
+                navigate('/login');
             }
+            if (!response.ok) throw new Error(data.error)
         } catch (error) {
             console.log(error);
-            Swal.fire({
-                icon: "error",
-                title: "Oops...",
-                text: error,
-                // footer: '<a href="#">Why do I have this issue?</a>'
-            });
+            dispatch({ type: 'ERRORS', errors: error })
+        }
+        finally {
+            setLoading(false)
         }
     }
     return (
@@ -99,9 +99,15 @@ function Signup() {
                     )}
                 </div>
             </div>
+            {errors && <p className='text-red-800 text-sm text-left'>{errors.toString()}</p>}
 
             <Button onClick={handleSignup}>
-                <img src={Loader} className='w-10' alt="" />
+                {loading ? (
+                    <img src={Loader} className='w-10' alt="" />
+                ) : (
+                    <p className='text-[var(--background-color)]'>Sign up</p>
+                )}
+
             </Button>
         </form>
     )
