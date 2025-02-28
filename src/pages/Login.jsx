@@ -16,28 +16,55 @@ function Login() {
     const { email, password, errors, dispatch } = useProvider();
     const [visible, setVisible] = useState(false)
     const [loading, setLoading] = useState(false)
+
     const handleLogin = async () => {
+        if (!username.trim() || !email.trim() || !password.trim()) {
+            dispatch({ type: 'ERRORS', errors: 'Please fill all fields' })
+            return;
+        }
+        setLoading(true);
         try {
-            const response = await fetch(`${SIGNIN_URL}`, { // Change this URL to match your backend
+
+            const response = await fetch(`${SIGNIN_URL}`, {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email, password }),
             });
 
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
+            let data;
+            const contentType = response.headers.get("content-type");
+            if (contentType && contentType.includes("application/json")) {
+                data = await response.json(); // Parse JSON safely
+            } else {
+                throw new Error(`Unexpected response format. Status: ${response.status}`);
             }
 
-            const data = await response.json(); // Ensure response is valid JSON
-            console.log("Login Successful:", data);
+            if (!response.ok) {
+                throw new Error(data.error || `Login failed with status: ${response.status}`);
+            }
 
-            // Handle successful login (e.g., store token)
+            console.log("Login Successful:", data);
+            dispatch({ type: 'USERNAME', user: '' });
+            dispatch({ type: 'EMAIL', userEmail: '' });
+            dispatch({ type: 'ERRORS', errors: '' });
+
+            Swal.fire({
+                title: 'Login Successful!',
+                icon: 'success',
+                confirmButtonText: 'Continue'
+            }).then(result => {
+                if (result.isConfirmed) {
+                    window.location.href = '/dashboard';
+                }
+            });
         } catch (error) {
-            console.error("Login Error:", error.message);
+            console.error("Login Error:", error);
+            dispatch({ type: 'ERRORS', errors: error.message });
+        } finally {
+            setLoading(false);
         }
     };
+
 
     return (
         <form action='' className='w-[350px] h-auto rounded-lg px-4 py-2.5 flex flex-col justify-center align-items-center text-center shadow-2xl shadow-[#afa1a1]' style={{
@@ -46,7 +73,7 @@ function Login() {
             <div className="h-40 w-full flex flex-col justify-center items-center">
                 <h1>LOGIN</h1>
                 <p>Dont have an account yet?
-                    <Link to='/sign-up' className='underline'> Sign up</Link>
+                    <Link to='/sign-up' className='underline' onClick={() => dispatch({ type: 'ERRORS', errors: null })}> Sign up</Link>
                 </p>
             </div>
             <div className="relative">
@@ -75,6 +102,7 @@ function Login() {
                     )}
                 </div>
             </div>
+            {errors && <p className='text-red-800 text-sm text-left'>{errors.toString()}</p>}
             <Button onClick={handleLogin}>
                 {loading ? (
                     <img src={Loader} className='w-10' alt="" />

@@ -66,7 +66,7 @@ function Signup() {
             <div className="h-40 w-full flex flex-col justify-center items-center relative">
                 <h1>SIGNUP</h1>
                 <p>Already have an account?
-                    <Link to='/login' className='underline'> Login</Link>
+                    <Link to='/login' className='underline' onClick={() => dispatch({ type: 'ERRORS', errors: null })}> Login</Link>
                 </p>
             </div>
             <div className="relative">
