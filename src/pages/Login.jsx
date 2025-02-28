@@ -18,7 +18,7 @@ function Login() {
     const [loading, setLoading] = useState(false)
 
     const handleLogin = async () => {
-        if (!username.trim() || !email.trim() || !password.trim()) {
+        if (!email.trim() || !password.trim()) {
             dispatch({ type: 'ERRORS', errors: 'Please fill all fields' })
             return;
         }
