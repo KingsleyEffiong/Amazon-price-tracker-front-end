@@ -5,7 +5,7 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import SegmentIcon from '@mui/icons-material/Segment';
 import { IconButton } from '@mui/material';
 function Sidebar() {
-    const [toggle, setToggle] = useState(false);
+    const [toggle, setToggle] = useState(true);
 
     function handleToggle() {
         setToggle((prev) => !prev);
@@ -17,33 +17,33 @@ function Sidebar() {
             </IconButton>
             <ul className="flex flex-col justify-center gap-10 items-start mt-32">
                 <li className={`flex gap-3 items-center px-3 py-7 rounded-l cursor-pointer shadow-lg shadow-[black] 
-        transition-all duration-500 ease-in-out hover:scale-105 hover:shadow-2xl hover:shadow-[#0a2c24] hover:bg-[#12876D]
+        transition-all duration-200 ease-in-out hover:scale-105 hover:shadow-2xl hover:shadow-[#0a2c24] hover:bg-[#12876D]
         ${toggle ? 'bg-transparent border-r border-r-[#16A085] min-w-[50px]' : 'bg-[#16A085] min-w-full rounded-full '}`
                 }>
-                    <DashboardIcon className="transition-transform duration-500 ease-in-out" />
-                    <p className={`transition-[opacity,max-width] duration-500 ease-in-out overflow-hidden 
+                    <DashboardIcon className="transition-transform duration-200 ease-in-out" />
+                    <p className={`transition-[opacity,max-width] duration-200 ease-in-out overflow-hidden 
             ${toggle ? 'opacity-0 max-w-0' : 'opacity-100 max-w-[200px]'}`}>
                         Dashboard
                     </p>
                 </li>
 
                 <li className={`flex gap-3 items-center px-3 py-7 rounded-l cursor-pointer shadow-lg shadow-[black] 
-        transition-all duration-500 ease-in-out hover:scale-105 hover:shadow-2xl hover:shadow-[#0a2c24] hover:bg-[#12876D]
+        transition-all duration-200 ease-in-out hover:scale-105 hover:shadow-2xl hover:shadow-[#0a2c24] hover:bg-[#12876D]
         ${toggle ? 'bg-transparent border-r border-r-[#16A085] min-w-[50px]' : 'bg-[#16A085] min-w-full rounded-full'}`
                 }>
-                    <NotificationsIcon className="transition-transform duration-500 ease-in-out" />
-                    <p className={`transition-[opacity,max-width] duration-500 ease-in-out overflow-hidden 
+                    <NotificationsIcon className="transition-transform duration-200 ease-in-out" />
+                    <p className={`transition-[opacity,max-width] duration-200 ease-in-out overflow-hidden 
             ${toggle ? 'opacity-0 max-w-0' : 'opacity-100 max-w-[200px]'}`}>
                         Notification
                     </p>
                 </li>
 
                 <li className={`flex gap-3 items-center px-3 py-7 rounded-l cursor-pointer shadow-lg shadow-[black] 
-        transition-all duration-500 ease-in-out hover:scale-105 hover:shadow-2xl hover:shadow-[#0a2c24] hover:bg-[#12876D]
+        transition-all duration-150 ease-in-out hover:scale-105 hover:shadow-2xl hover:shadow-[#0a2c24] hover:bg-[#12876D]
         ${toggle ? 'bg-transparent border-r border-r-[#16A085] min-w-[50px]' : 'bg-[#16A085] min-w-full rounded-full'}`
                 }>
-                    <SettingsIcon className="transition-transform duration-500 ease-in-out" />
-                    <p className={`transition-[opacity,max-width] duration-500 ease-in-out overflow-hidden 
+                    <SettingsIcon className="transition-transform duration-150 ease-in-out" />
+                    <p className={`transition-[opacity,max-width] duration-150 ease-in-out overflow-hidden 
             ${toggle ? 'opacity-0 max-w-0' : 'opacity-100 max-w-[200px]'}`}>
                         Setting
                     </p>
