@@ -2,6 +2,7 @@ import React from 'react'
 import Sidebar from '../components/Sidebar'
 import Navbar from '../components/Navbar'
 import UI from '../components/UI'
+import Modal from '../ui/Modal'
 
 function Dashboard() {
     return (
@@ -10,6 +11,7 @@ function Dashboard() {
         }}>
             <Sidebar />
             <UI />
+            <Modal />
         </div>
     )
 }

@@ -8,14 +8,16 @@ import CardMedia from '@mui/material/CardMedia';
 import Typography from '@mui/material/Typography';
 import CardActionArea from '@mui/material/CardActionArea';
 import { Button, CardActions } from "@mui/material";
+import { useProvider } from "./PostProvider";
 
 
 function ListOfProducts() {
     const [data, setData] = useState([]);
+    const { chartModal, dispatch } = useProvider()
 
     useEffect(() => {
         const fetchData = async () => {
-            const userId = "Je0KiLVaAFlPBdr8EAiM";
+            const userId = "IMUsOc7b4IzhNmmixtPG";
             if (!userId) {
                 console.warn("No userId found.");
                 return;
@@ -94,6 +96,7 @@ function ListOfProducts() {
                                 <Button
                                     variant="contained"
                                     className="shadow-2xl shadow-black"
+                                    onClick={() => dispatch({ type: 'CHARTMODAL', modal: true })}
                                     sx={{
                                         backgroundColor: '#2C2D33',
                                         borderRadius: "8px",
