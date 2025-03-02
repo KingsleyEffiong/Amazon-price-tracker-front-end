@@ -2,124 +2,175 @@ import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { db } from "../Firebase";
 import { doc, getDoc } from "firebase/firestore";
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import CardMedia from '@mui/material/CardMedia';
-import Typography from '@mui/material/Typography';
-import CardActionArea from '@mui/material/CardActionArea';
-import { Button, CardActions } from "@mui/material";
 import { useProvider } from "./PostProvider";
-
-
+import { Box, Button, LinearProgress } from "@mui/material";
+import Loader from "../assets/images/Triple intersection.gif"
+import CircularProgress from '@mui/material/CircularProgress';
+import SwalModal from "../ui/SwalModal";
+import Swal from "sweetalert2";
 function ListOfProducts() {
     const [data, setData] = useState([]);
-    const { chartModal, dispatch } = useProvider()
+    const { dispatch } = useProvider();
+    const [message, setMessage] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [linearLoading, setLinearLoading] = useState(false)
+    const [progress, setProgress] = useState(0);
+
+    useEffect(() => {
+        // Simulate loading progress
+        const interval = setInterval(() => {
+            setProgress((prev) => (prev >= 100 ? 100 : prev + 10));
+        }, 500);
+
+        setTimeout(() => {
+            setLoading(false);
+            clearInterval(interval);
+        }, 5000); // Simulates a 5-second loading process
+
+        return () => clearInterval(interval);
+    }, []);
+
 
     useEffect(() => {
         const fetchData = async () => {
             const userId = "IMUsOc7b4IzhNmmixtPG";
-            if (!userId) {
-                console.warn("No userId found.");
-                return;
-            }
-
-            console.log("Fetching data...");
+            if (!userId) return;
+            setLoading(true);
             try {
                 const userRef = doc(db, "saveProduct", userId);
                 const userSnapshot = await getDoc(userRef);
 
                 if (userSnapshot.exists()) {
                     const userData = userSnapshot.data();
-                    console.log("Fetched data:", userData);
                     setData(userData.products || []);
-                } else {
-                    console.log("User document does not exist.");
                 }
             } catch (error) {
                 console.error("Error fetching data:", error);
+                setMessage(error.message);
+                if (error.message.includes('Failed to get document because the client is offline.')) {
+                    Swal.fire({
+                        title: 'Poor or no internet connection, please check your internet connection and refresh the page',
+                        icon: "error",
+                        draggable: true
+                    });
+                }
+                else {
+                    Swal.fire({
+                        title: error.message,
+                        icon: "error",
+                        draggable: true
+                    });
+                }
+            }
+            finally {
+                setLoading(false)
             }
         };
 
         fetchData();
     }, []);
 
+    async function handleShowChart(url) {
+        const userId = "IMUsOc7b4IzhNmmixtPG";
+        if (!userId) return;
+        setLinearLoading(true)
+        try {
+            const userRef = doc(db, "saveProduct", userId);
+            const userSnapshot = await getDoc(userRef);
+
+            if (userSnapshot.exists()) {
+                const userData = userSnapshot.data();
+                const product = userData.products.find((item) => item.url === url);
+
+                if (product?.priceHistory) {
+                    dispatch({ type: "CHARTDATA", chart: product.priceHistory });
+                    dispatch({ type: "url", url });
+                    dispatch({ type: "CHARTMODAL", modal: true });
+                } else {
+                    // alert("No available chart for this product");
+                    Swal.fire({
+                        title: 'No available chart for this product',
+                        icon: "warning",
+                        draggable: true
+                    });
+                }
+            }
+        } catch (error) {
+            console.error("Error fetching data:", error);
+            setMessage(error.message);
+            Swal.fire({
+                title: error.message,
+                icon: "error",
+                draggable: true
+            });
+
+        } finally {
+            setLinearLoading(false)
+        }
+    }
+
+    if (linearLoading)
+        return (
+            <Box sx={{ width: '100%', position: "fixed", top: 0, left: 0 }}>
+                <LinearProgress sx={{ backgroundColor: "white", "& .MuiLinearProgress-bar": { backgroundColor: "#16A085" } }} />
+            </Box>
+        );
+
+    if (loading)
+        return (
+            <div className="flex flex-col justify-center items-center h-screen bg-gray-900">
+                <CircularProgress
+                    variant="determinate"
+                    value={progress}
+                    size={60}
+                    thickness={5}
+                    sx={{ color: "#3B82F6" }} // Custom color (blue-500)
+                />
+                <p className="text-xl text-white mt-3">{progress}%</p>
+            </div>
+        );
     return (
-        <div className="container mx-auto p-1">
-            <h2 className="text-2xl font-bold text-center text-white mb-6">Your Tracked Products</h2>
-            <div className="gap-6 flex flex-wrap">
+        <div className="min-h-screen flex flex-col items-center px-1py-12">
+            <h2 className="text-lg font-bold text-center text-white mb-8">Your Tracked Products</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-1 gap-8 w-full">
                 {data.map((product, index) => (
                     <motion.div
                         key={index}
-                        className="p-4 rounded-lg bg-transparent"
+                        className="relative backdrop-blur-lg w-full bg-opacity-70 shadow-lg shadow-[#141518] rounded-2xl p-4 overflow-hidden"
                         initial={{ opacity: 0, y: 50 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.5, delay: index * 0.1 }}
+                        whileHover={{ scale: 1.05 }}
                     >
-                        <Card
-                            sx={{
-                                maxWidth: 345,
-                                borderRadius: "16px",
-                                overflow: "hidden",
-                                transition: "all 0.3s ease-in-out",
-                                "&:hover": {
-                                    transform: "scale(1.05)",
-                                    boxShadow: "0px 10px 30px rgba(0, 0, 0, 0.2)"
-                                }
-                            }}
-                        >
-                            <CardActionArea>
-                                <CardMedia
-                                    component="img"
-                                    image={product.image}
-                                    sx={{
-                                        height: 200,
-                                        objectFit: "cover",
-                                        transition: "opacity 0.3s ease-in-out",
-                                        "&:hover": {
-                                            opacity: 0.9
-                                        }
-                                    }}
-                                    alt={product.title}
-                                />
-                                <CardContent className="bg-gradient-to-b from-white to-gray-100 text-[#2C2D33]">
-                                    <Typography
-                                        gutterBottom
-                                        variant="h6"
-                                        component="div"
-                                        className="font-semibold text-lg tracking-wide"
-                                    >
-                                        {product.title.length > 50 ? `${product.title.slice(0, 50)}...` : product.title}
-                                    </Typography>
-                                </CardContent>
-                            </CardActionArea>
-                            <CardActions className="p-3 flex justify-center">
-                                <Button
-                                    variant="contained"
-                                    className="shadow-2xl shadow-black"
-                                    onClick={() => dispatch({ type: 'CHARTMODAL', modal: true })}
-                                    sx={{
-                                        backgroundColor: '#2C2D33',
-                                        borderRadius: "8px",
-                                        padding: "10px 20px",
-                                        fontWeight: "bold",
-                                        textTransform: "none",
-                                        transition: "all 0.3s",
-                                        "&:hover": {
-                                            backgroundColor: "#1E1F23"
-                                        },
-                                        "&:active": {
-                                            transform: "scale(0.95)"
-                                        }
-                                    }}
-                                >
-                                    Show Chart
-                                </Button>
-                            </CardActions>
-                        </Card>
+                        <div className="relative overflow-hidden rounded-lg">
+                            <img
+                                src={product.image}
+                                alt={product.title}
+                                className="w-full h-48 object-cover rounded-lg transition-transform duration-300 hover:scale-105 cursor-pointer"
+                            />
+                        </div>
+                        <div className="mt-4">
+                            <h3 className="text-lg font-semibold text-white truncate">{product.title}</h3>
+                            <div className="flex flex-col">
+
+                                <p className="text-sm font-semibold text-white truncate">Amazon Price: {product.price}</p>
+                                <p className="text-sm font-semibold text-white truncate">Your estimated budget: {product.userPrice}</p>
+                            </div>
+                        </div>
+                        <div className="flex justify-center mt-4">
+                            <motion.button
+                                onClick={() => handleShowChart(product.url)}
+                                className="bg-[#16A085] text-black font-bold py-2 px-5 rounded-lg shadow-md transition-all duration-300 cursor-pointer"
+                                whileHover={{ scale: 1.1 }}
+                                whileTap={{ scale: 0.95 }}
+                            >
+                                Show Chart
+                            </motion.button>
+                        </div>
                     </motion.div>
                 ))}
             </div>
-        </div >
+        </div>
     );
 }
 

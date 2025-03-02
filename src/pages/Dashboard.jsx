@@ -3,6 +3,7 @@ import Sidebar from '../components/Sidebar'
 import Navbar from '../components/Navbar'
 import UI from '../components/UI'
 import Modal from '../ui/Modal'
+import { Outlet } from 'react-router-dom'
 
 function Dashboard() {
     return (
@@ -10,7 +11,7 @@ function Dashboard() {
             backgroundColor: "var(--background-color)"
         }}>
             <Sidebar />
-            <UI />
+            <Outlet />
             <Modal />
         </div>
     )
