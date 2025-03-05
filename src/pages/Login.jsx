@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import InputField from '../ui/InputField'
 import Button from '../ui/Button'
 import { useProvider } from '../components/PostProvider'
@@ -16,15 +16,16 @@ function Login() {
     const { email, password, errors, dispatch } = useProvider();
     const [visible, setVisible] = useState(false)
     const [loading, setLoading] = useState(false)
+    const navigate = useNavigate()
 
     const handleLogin = async () => {
         if (!email.trim() || !password.trim()) {
-            dispatch({ type: 'ERRORS', errors: 'Please fill all fields' })
+            dispatch({ type: 'ERRORS', errors: 'Please fill all fields' });
             return;
         }
         setLoading(true);
-        try {
 
+        try {
             const response = await fetch(`${SIGNIN_URL}`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -34,13 +35,22 @@ function Login() {
             let data;
             const contentType = response.headers.get("content-type");
             if (contentType && contentType.includes("application/json")) {
-                data = await response.json(); // Parse JSON safely
+                data = await response.json();
+                console.log(data);
             } else {
                 throw new Error(`Unexpected response format. Status: ${response.status}`);
             }
 
             if (!response.ok) {
-                throw new Error(data.error || `Login failed with status: ${response.status}`);
+                throw new Error(data?.error || `Login failed with status: ${response.status}`);
+            }
+
+            // ✅ Store token safely
+            if (data.data.token) {
+                sessionStorage.setItem("session", data.data.token);
+                console.log("Stored Token:", sessionStorage.getItem("session"));
+            } else {
+                throw new Error("No token received from server");
             }
 
             console.log("Login Successful:", data);
@@ -54,9 +64,10 @@ function Login() {
                 confirmButtonText: 'Continue'
             }).then(result => {
                 if (result.isConfirmed) {
-                    window.location.href = '/dashboard';
+                    navigate('/dashboard');
                 }
             });
+
         } catch (error) {
             console.error("Login Error:", error);
             dispatch({ type: 'ERRORS', errors: error.message });
@@ -64,6 +75,7 @@ function Login() {
             setLoading(false);
         }
     };
+
 
 
     return (
