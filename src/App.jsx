@@ -6,6 +6,7 @@ import { PostProvider } from "./components/PostProvider";
 import backgroundImage from "./assets/images/black-concrete-wall.jpg";
 import UI from "./components/UI";
 import Notification from "./components/Notification";
+import Setting from "./components/Setting";
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
               <Route index element={<UI />} />
               <Route path="/dashboard" element={<UI />} />
               <Route path="notification" element={<Notification />} />
+              <Route path="setting" element={<Setting />} />
             </Route>
           </Routes>
         </BrowserRouter>
