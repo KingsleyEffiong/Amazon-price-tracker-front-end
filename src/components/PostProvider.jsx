@@ -16,6 +16,8 @@ const initialState = {
     errors: null,
     chartModal: false,
     chartData: [],
+    userId: null,
+    fectchUsername: null,
     url: null
 }
 const PostContext = createContext();
@@ -61,12 +63,22 @@ function PostProvider({ children }) {
                     ...state,
                     url: action.url
                 }
+            case 'userId':
+                return {
+                    ...state,
+                    userId: action.userId
+                }
+            case 'fectchUsername':
+                return {
+                    ...state,
+                    fectchUsername: action.fectchUsername
+                }
                 break;
             default:
                 return state;
         }
     }
-    const [{ username, password, email, errors, chartModal, chartData, url }, dispatch] = useReducer(reducer, initialState);
+    const [{ username, password, email, errors, chartModal, chartData, url, userId, fectchUsername }, dispatch] = useReducer(reducer, initialState);
     return (
         <PostContext.Provider value={{
             username,
@@ -75,6 +87,8 @@ function PostProvider({ children }) {
             errors,
             chartModal,
             chartData,
+            userId,
+            fectchUsername,
             url,
             dispatch
         }}>{children}</PostContext.Provider>

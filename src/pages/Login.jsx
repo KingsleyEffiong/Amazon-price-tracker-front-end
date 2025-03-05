@@ -13,7 +13,7 @@ import Swal from 'sweetalert2'
 
 const SIGNIN_URL = import.meta.env.VITE_SIGNIN_URL;
 function Login() {
-    const { email, password, errors, dispatch } = useProvider();
+    const { email, password, errors, dispatch, userId } = useProvider();
     const [visible, setVisible] = useState(false)
     const [loading, setLoading] = useState(false)
     const navigate = useNavigate()
@@ -49,6 +49,7 @@ function Login() {
             if (data.data.token) {
                 sessionStorage.setItem("session", data.data.token);
                 console.log("Stored Token:", sessionStorage.getItem("session"));
+                localStorage.setItem("userId", data.data.user._id);
             } else {
                 throw new Error("No token received from server");
             }

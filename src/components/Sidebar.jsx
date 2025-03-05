@@ -16,7 +16,7 @@ function Sidebar() {
     }
 
     const menuItems = [
-        { path: '/dashboard/home', icon: <DashboardIcon />, label: 'Dashboard' },
+        { path: '/dashboard', icon: <DashboardIcon />, label: 'Dashboard' },
         { path: '/dashboard/notification', icon: <NotificationsIcon />, label: 'Notification' },
         { path: '/dashboard/setting', icon: <SettingsIcon />, label: 'Setting' }
     ];
