@@ -9,6 +9,7 @@ import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import Loader from "../assets/images/Triple intersection.gif"
 import Swal from 'sweetalert2'
+import { saveDeviceLogin } from '../components/connectedDevice/saveDeviceLogin'
 
 
 const SIGNIN_URL = import.meta.env.VITE_SIGNIN_URL;
@@ -50,6 +51,7 @@ function Login() {
                 sessionStorage.setItem("session", data.data.token);
                 console.log("Stored Token:", sessionStorage.getItem("session"));
                 localStorage.setItem("userId", data.data.user._id);
+                saveDeviceLogin(data.data.user._id)
             } else {
                 throw new Error("No token received from server");
             }

@@ -1,15 +1,17 @@
 import React, { useEffect, useState } from 'react'
-import { db } from "../Firebase";
+// import { db } from "../Firebase";
+import { db } from '../firebase';
 import { doc, getDoc } from "firebase/firestore";
 import { motion, AnimatePresence } from "framer-motion";
+import { Box, LinearProgress } from '@mui/material';
 function Notification() {
-    const [loading, setLoading] = useState(false);
     const [notification, setNotification] = useState([])
+    const [linearLoading, setLinearLoading] = useState(false)
     useEffect(() => {
         const fetchData = async () => {
-            const userId = "IMUsOc7b4IzhNmmixtPG";
+            const userId = localStorage.getItem("userId");
             if (!userId) return;
-            setLoading(true);
+            setLinearLoading(true);
             try {
                 const userRef = doc(db, "saveProduct", userId);
                 const userSnapshot = await getDoc(userRef);
@@ -20,7 +22,7 @@ function Notification() {
                     // Extract notifications safely
                     const notifications = userData.products
                         .map((product) => product.notifications || []) // Ensure it's an array
-                        .flat(); // Flatten the array to merge all notifications
+                        .flat();
 
                     // console.log(notifications); // Logs all notifications from all products
                     setNotification(notifications)
@@ -30,20 +32,31 @@ function Notification() {
             } catch (error) {
                 console.error("Error fetching data:", error);
             } finally {
-                setLoading(false);
+                setLinearLoading(false);
             }
         };
 
         fetchData();
     }, []);
 
+
+    if (linearLoading)
+        return (
+            <Box sx={{ width: '100%', position: "fixed", top: 0, left: 0 }}>
+                <LinearProgress sx={{ backgroundColor: "white", "& .MuiLinearProgress-bar": { backgroundColor: "#16A085" } }} />
+            </Box>
+        );
+
+    if (notification.length == 0)
+        return (
+            <p className="text-center text-gray-600">No new notifications found.</p>)
     return (
         <div className="w-[97%] mx-auto px-2 py-1.5">
             <h2 className="text-xl font-semibold text-amber-50 mb-4">🔔 Notifications</h2>
             <div className="space-y-4">
                 <AnimatePresence>
                     {notification
-                        .filter((noti) => noti.timestamp) // Remove invalid notifications
+                        .filter((noti) => noti.timestamp) // Remove invalid notifications 
                         .sort((a, b) => b.timestamp - a.timestamp) // Sort by newest first
                         .map((notification, index) => (
                             <motion.div

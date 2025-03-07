@@ -18,6 +18,7 @@ function Signup() {
     const { username, email, password, errors, dispatch } = useProvider();
     const [visible, setVisible] = useState(false)
     const [loading, setLoading] = useState(false)
+    const userId = localStorage.getItem('userId');
 
     const navigate = useNavigate()
 
@@ -27,6 +28,15 @@ function Signup() {
             dispatch({ type: 'ERRORS', errors: 'Please fill all fields' })
             return;
         }
+        if (userId) {
+            Swal.fire({
+                title: "You are already have an account, please log in with your account",
+                icon: "info",
+                draggable: true
+            });
+            return;
+        }
+
         setLoading(true)
         try {
             const response = await fetch(`${SIGNUP_URL}`, {

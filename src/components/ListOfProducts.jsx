@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { db } from "../Firebase";
+import { db } from "../firebase";
 import { doc, getDoc } from "firebase/firestore";
 import { useProvider } from "./PostProvider";
 import { Box, Button, LinearProgress } from "@mui/material";
@@ -8,6 +8,7 @@ import Loader from "../assets/images/Triple intersection.gif"
 import CircularProgress from '@mui/material/CircularProgress';
 import SwalModal from "../ui/SwalModal";
 import Swal from "sweetalert2";
+import { Link } from "react-router-dom";
 function ListOfProducts() {
     const [data, setData] = useState([]);
     const { dispatch } = useProvider();
@@ -33,7 +34,8 @@ function ListOfProducts() {
 
     useEffect(() => {
         const fetchData = async () => {
-            const userId = "IMUsOc7b4IzhNmmixtPG";
+            const userId = localStorage.getItem("userId");
+
             if (!userId) return;
             setLoading(true);
             try {
@@ -71,7 +73,7 @@ function ListOfProducts() {
     }, []);
 
     async function handleShowChart(url) {
-        const userId = "IMUsOc7b4IzhNmmixtPG";
+        const userId = localStorage.getItem("userId");
         if (!userId) return;
         setLinearLoading(true)
         try {
@@ -129,6 +131,18 @@ function ListOfProducts() {
                 <p className="text-xl text-white mt-3">{progress}%</p>
             </div>
         );
+
+    if (data.length === 0)
+        return (
+            <div className="m-auto">
+                <p>No product found. Please save the price of the product you want to track.</p>
+                <a href="https://www.amazon.com" className="underline" target="_blank" rel="noopener noreferrer">
+                    Visit Amazon.com
+                </a>
+                <p>and save a product for tracking.</p>
+            </div>
+        )
+
     return (
         <div className="min-h-screen flex flex-col items-center px-1py-12">
             <h2 className="text-lg font-bold text-center text-white mb-8">Your Tracked Products</h2>

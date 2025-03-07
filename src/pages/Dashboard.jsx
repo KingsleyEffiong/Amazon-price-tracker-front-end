@@ -76,7 +76,6 @@ function Dashboard({ username }) {
 
             const data = await response.json();
             username = data.data.username
-            console.log(username)
             dispatch({ type: "fectchUsername", fectchUsername: username });
         } catch (error) {
             console.error("User Fetch Error:", error);

@@ -14,7 +14,7 @@ function UI() {
                         <h2 className="text-lg font-bold text-center text-white mb-8">How to use the extension</h2>
                         <Video />
                     </div>
-                    <div className="bg-[#21222D] p-5 text-white md:h-[520px] overflow-auto w-full">
+                    <div className="bg-[#21222D] p-5 text-white md:h-[520px] overflow-auto w-full flex flex-col justify-center">
                         <ListOfProducts />
                     </div>
                 </div>
